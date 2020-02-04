@@ -32,7 +32,7 @@ public class MessageProducer {
         RecordMetadata recordMetadata = null;
         try {
             recordMetadata = (RecordMetadata) kafkaProducer.send(producerRecord).get();
-            logger.info("recordMetadata : {} ", recordMetadata);
+            logger.info("Message ** {} ** sent successfully with the key  **{}** and the recordMetadata is : {} ", message,key, recordMetadata);
         }
         catch (InterruptedException | ExecutionException e) {
             logger.error("Exception in publishMessageSync : {} ", e);
