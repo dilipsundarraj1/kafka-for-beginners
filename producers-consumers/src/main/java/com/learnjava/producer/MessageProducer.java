@@ -27,7 +27,7 @@ public class MessageProducer {
     }
 
 
-    public RecordMetadata publishMessageSync(String key, String message) {
+    public void publishMessageSync(String key, String message) {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, key, message);
         RecordMetadata recordMetadata = null;
         try {
@@ -37,13 +37,14 @@ public class MessageProducer {
         catch (InterruptedException | ExecutionException e) {
             logger.error("Exception in publishMessageSync : {} ", e);
         }
-        return recordMetadata;
+        logger.info(" Published Record Offset is {} and the partition is {}", recordMetadata.offset(), recordMetadata.partition());
     }
 
-    public Future<RecordMetadata> publishMessageAsync(String key, String message) {
+    public void publishMessageAsync(String key, String message) throws InterruptedException, ExecutionException, TimeoutException {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, key, message);
-        RecordMetadata recordMetadata = null;
-           return kafkaProducer.send(producerRecord);
+        Future<RecordMetadata> recordMetadataFuture = kafkaProducer.send(producerRecord);
+        RecordMetadata recordMetadata = recordMetadataFuture.get(3, TimeUnit.SECONDS);
+        logger.info("Record MetaData Offset : {} and the partition is {}", recordMetadata.offset(), recordMetadata.partition());
     }
 
     public static Map<String, String> buildProducerProperties() {
@@ -60,11 +61,8 @@ public class MessageProducer {
 
         Map<String, String> producerProps = buildProducerProperties();
         MessageProducer messageProducer = new MessageProducer(producerProps);
-        /*RecordMetadata recordMetadata = messageProducer.publishMessageSync(null, "ABC");
-        System.out.println("recordMetadata: " + recordMetadata);*/
-        Future<RecordMetadata> recordMetadataFuture = messageProducer.publishMessageAsync(null , "ABC");
-        logger.info("Record MetaData in async get call : {}", recordMetadataFuture.get(3, TimeUnit.SECONDS));
-        // Some more code that needs to be executed
+        messageProducer.publishMessageSync(null, "ABC");
+        messageProducer.publishMessageAsync(null , "ABC");
 
     }
 }
