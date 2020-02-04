@@ -1,0 +1,3 @@
+rootProject.name = 'kafka-for-beginners'
+include 'producers-consumers'
+
