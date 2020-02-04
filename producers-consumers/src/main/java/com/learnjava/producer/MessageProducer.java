@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class MessageProducer {
 
@@ -31,14 +34,16 @@ public class MessageProducer {
             recordMetadata = (RecordMetadata) kafkaProducer.send(producerRecord).get();
             logger.info("recordMetadata : {} ", recordMetadata);
         }
-        /*catch (InterruptedException e) {
-            e.printStackTrace();
-            logger.error("");
-        }*/
         catch (InterruptedException | ExecutionException e) {
             logger.error("Exception in publishMessageSync : {} ", e);
         }
         return recordMetadata;
+    }
+
+    public Future<RecordMetadata> publishMessageAsync(String key, String message) {
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, key, message);
+        RecordMetadata recordMetadata = null;
+           return kafkaProducer.send(producerRecord);
     }
 
     public static Map<String, String> buildProducerProperties() {
@@ -51,11 +56,15 @@ public class MessageProducer {
         return propsMap;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
 
         Map<String, String> producerProps = buildProducerProperties();
         MessageProducer messageProducer = new MessageProducer(producerProps);
-        RecordMetadata recordMetadata = messageProducer.publishMessageSync(null, "ABC");
-        System.out.println("recordMetadata: " + recordMetadata);
+        /*RecordMetadata recordMetadata = messageProducer.publishMessageSync(null, "ABC");
+        System.out.println("recordMetadata: " + recordMetadata);*/
+        Future<RecordMetadata> recordMetadataFuture = messageProducer.publishMessageAsync(null , "ABC");
+        logger.info("Record MetaData in async get call : {}", recordMetadataFuture.get(3, TimeUnit.SECONDS));
+        // Some more code that needs to be executed
+
     }
 }
