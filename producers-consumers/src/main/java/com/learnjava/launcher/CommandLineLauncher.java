@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 import static com.learnjava.producer.MessageProducer.buildProducerProperties;
 
@@ -41,20 +42,30 @@ public class CommandLineLauncher {
                 "        \\/    \\/           \\/     \\/                                \\/           \\/    \\/       ";
     }
 
+    public static String BYE(){
+
+        return "_______________.___.___________\n" +
+                "\\______   \\__  |   |\\_   _____/\n" +
+                " |    |  _//   |   | |    __)_ \n" +
+                " |    |   \\\\____   | |        \\\n" +
+                " |______  // ______|/_______  /\n" +
+                "        \\/ \\/               \\/ ";
+    }
+
     public static void launchCommandLine(){
         boolean cliUp = true;
         while (cliUp){
             Scanner scanner = new Scanner(System.in);
             userOptions();
             String option = scanner.next();
-            logger.info("Entered Option is : {} ", option);
+            logger.info("Selected Option is : {} ", option);
             switch (option) {
                 case "1":
-                    acceptMessageFromUser();
+                case "2":
+                    acceptMessageFromUser(option);
                     break;
                 case "3":
                     cliUp = false;
-                    //System.exit(0);
                     break;
                 default:
                     break;
@@ -77,18 +88,33 @@ public class CommandLineLauncher {
         return messageProducer;
     }
 
-    public static void acceptMessageFromUser(){
+    public static void publishMessage(MessageProducer messageProducer, String input){
+        StringTokenizer stringTokenizer = new StringTokenizer(input, "-");
+        Integer noOfTokens = stringTokenizer.countTokens();
+        switch (noOfTokens){
+            case 1:
+                messageProducer.publishMessageSync(null,stringTokenizer.nextToken());
+                break;
+            case 2:
+                messageProducer.publishMessageSync(stringTokenizer.nextToken(),stringTokenizer.nextToken());
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static void acceptMessageFromUser(String option){
         MessageProducer messageProducer = init();
         Scanner scanner = new Scanner(System.in);
         boolean flag= true;
         while (flag){
             System.out.println("Please Enter a Message to produce to Kafka:");
-            String input = scanner.next();
+            String input = scanner.nextLine();
             logger.info("Entered message is {}", input);
-            if(input.equals("00")){
+            if(input.equals("00")) {
                 flag = false;
-            }else{
-                messageProducer.publishMessageSync(null,input);
+            }else {
+                publishMessage(messageProducer, input);
             }
         }
         logger.info("Exiting from Option 1");
@@ -98,7 +124,7 @@ public class CommandLineLauncher {
 
         System.out.println(commandLineStartLogo());
         launchCommandLine();
-        System.out.println("BYE");
+        System.out.println(BYE());
 
 
     }
