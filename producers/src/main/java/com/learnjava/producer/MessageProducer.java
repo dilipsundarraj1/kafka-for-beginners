@@ -1,9 +1,7 @@
 package com.learnjava.producer;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.common.record.Record;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +20,14 @@ public class MessageProducer {
     String topicName = "test-topic";
     KafkaProducer kafkaProducer;
 
+    Callback  callback = (recordMetadata, exception)-> {
+        if(exception!=null){
+            logger.error("Exception is {} ", exception.getMessage());
+        }else {
+            logger.info("Record MetaData Async in CallBack Offset : {} and the partition is {}", recordMetadata.offset(), recordMetadata.partition());
+        }
+    };
+
     public MessageProducer(Map<String, String> producerProps) {
         kafkaProducer = new KafkaProducer(producerProps);
     }
@@ -32,19 +38,22 @@ public class MessageProducer {
         RecordMetadata recordMetadata = null;
         try {
             recordMetadata = (RecordMetadata) kafkaProducer.send(producerRecord).get();
-            logger.info("Message ** {} ** sent successfully with the key  **{}** and the recordMetadata is : {} ", message,key, recordMetadata);
+            logSuccessResponse(key, message, recordMetadata);
         }
         catch (InterruptedException | ExecutionException e) {
             logger.error("Exception in publishMessageSync : {} ", e);
         }
-        logger.info(" Published Record Offset is {} and the partition is {}", recordMetadata.offset(), recordMetadata.partition());
+
     }
 
+    public void logSuccessResponse(String  message, String key, RecordMetadata recordMetadata){
+        logger.info("Message ** {} ** sent successfully with the key  **{}** and the recordMetadata is : {} ", message,key, recordMetadata);
+        logger.info(" Published Record Offset is {} and the partition is {}", recordMetadata.offset(), recordMetadata.partition());
+    }
     public void publishMessageAsync(String key, String message) throws InterruptedException, ExecutionException, TimeoutException {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, key, message);
-        Future<RecordMetadata> recordMetadataFuture = kafkaProducer.send(producerRecord);
-        RecordMetadata recordMetadata = recordMetadataFuture.get(3, TimeUnit.SECONDS);
-        logger.info("Record MetaData Offset : {} and the partition is {}", recordMetadata.offset(), recordMetadata.partition());
+        kafkaProducer.send(producerRecord, callback);
+       // kafkaProducer.send(producerRecord).get();
     }
 
     public static Map<String, String> buildProducerProperties() {
@@ -54,6 +63,7 @@ public class MessageProducer {
         propsMap.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         propsMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
+        String serializer = "org.apache.kafka.common.serialization.StringSerializer";
         return propsMap;
     }
 
@@ -63,6 +73,6 @@ public class MessageProducer {
         MessageProducer messageProducer = new MessageProducer(producerProps);
         messageProducer.publishMessageSync(null, "ABC");
         messageProducer.publishMessageAsync(null , "ABC");
-
+        Thread.sleep(3000);
     }
 }
