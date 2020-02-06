@@ -1,13 +1,10 @@
 package com.learnjava.launcher;
 
 import com.learnjava.producer.MessageProducer;
-import com.sun.tools.javac.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import static com.learnjava.producer.MessageProducer.buildProducerProperties;
 
@@ -75,7 +72,10 @@ public class CommandLineLauncher {
     }
 
     public static void userOptions(){
-        List<String> userInputList = List.of("1: Kafka Producer", "2: Kafka Producer With Key", "3: Exit");
+        List<String> userInputList = new ArrayList<>();
+        userInputList.add("1: Kafka Producer");
+        userInputList.add("2: Kafka Producer With Key");
+        userInputList.add("3: Exit");
         System.out.println("Please select one of the below options:");
         for(String userInput: userInputList ){
             System.out.println(userInput);
