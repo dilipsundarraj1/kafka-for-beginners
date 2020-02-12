@@ -4,6 +4,7 @@ plugins {
 }
 
 allprojects {
+
     group 'com.learnkafka'
     version '1.0-SNAPSHOT'
     repositories {

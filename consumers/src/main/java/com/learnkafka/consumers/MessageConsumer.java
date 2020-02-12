@@ -40,7 +40,7 @@ public class MessageConsumer {
         while(true){
             ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(timeOutDuration);
             consumerRecords.forEach((record)->{
-                logger.info("Consumed Record key is {}  and the value is {} ", record.key(), record.value());
+                logger.info("Consumed Record key is {}  and the value is {} and the partition is {} ", record.key(), record.value(), record.partition());
             });
         }
        }catch (Exception e){

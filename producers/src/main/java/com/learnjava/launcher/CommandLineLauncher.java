@@ -74,8 +74,7 @@ public class CommandLineLauncher {
     public static void userOptions(){
         List<String> userInputList = new ArrayList<>();
         userInputList.add("1: Kafka Producer");
-        userInputList.add("2: Kafka Producer With Key");
-        userInputList.add("3: Exit");
+        userInputList.add("2: Exit");
         System.out.println("Please select one of the below options:");
         for(String userInput: userInputList ){
             System.out.println(userInput);
