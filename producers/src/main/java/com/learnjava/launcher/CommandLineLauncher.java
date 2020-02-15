@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import static com.learnjava.producer.MessageProducer.buildProducerProperties;
+import static com.learnjava.producer.MessageProducer.propsMap;
 
 public class CommandLineLauncher {
     private static final Logger logger = LoggerFactory.getLogger(MessageProducer.class);
@@ -83,7 +83,7 @@ public class CommandLineLauncher {
     }
     public static MessageProducer init(){
 
-        Map<String, String> producerProps = buildProducerProperties();
+        Map<String, String> producerProps = propsMap();
         MessageProducer messageProducer = new MessageProducer(producerProps);
         return messageProducer;
     }
@@ -117,7 +117,7 @@ public class CommandLineLauncher {
                 publishMessage(messageProducer, input);
             }
         }
-        logger.info("Exiting from Option 1");
+        logger.info("Exiting from Option : " + option);
     }
 
     public static void main(String[] args) {

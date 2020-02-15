@@ -1,7 +1,6 @@
 package com.learnjava.producer;
 
 import org.apache.kafka.clients.producer.*;
-import org.apache.kafka.common.record.Record;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class MessageProducer {
@@ -56,7 +53,7 @@ public class MessageProducer {
        // kafkaProducer.send(producerRecord).get();
     }
 
-    public static Map<String, String> buildProducerProperties() {
+    public static Map<String, String> propsMap() {
 
         Map<String, String> propsMap = new HashMap<>();
         propsMap.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092, localhost:9093, localhost:9094");
@@ -69,7 +66,7 @@ public class MessageProducer {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
 
-        Map<String, String> producerProps = buildProducerProperties();
+        Map<String, String> producerProps = propsMap();
         MessageProducer messageProducer = new MessageProducer(producerProps);
         messageProducer.publishMessageSync(null, "ABC");
         messageProducer.publishMessageAsync(null , "ABC");
