@@ -17,17 +17,17 @@ public class MessageProducer {
     String topicName = "test-topic";
     KafkaProducer kafkaProducer;
 
-    Callback  callback = (recordMetadata, exception)-> {
-        if(exception!=null){
-            logger.error("Exception is {} ", exception.getMessage());
-        }else {
-            logger.info("Record MetaData Async in CallBack Offset : {} and the partition is {}", recordMetadata.offset(), recordMetadata.partition());
-        }
-    };
-
     public MessageProducer(Map<String, String> producerProps) {
         kafkaProducer = new KafkaProducer(producerProps);
     }
+
+    Callback callback = (recordMetadata, exception) -> {
+        if (exception != null) {
+            logger.error("Exception is {} ", exception.getMessage());
+        } else {
+            logger.info("Record MetaData Async in CallBack Offset : {} and the partition is {}", recordMetadata.offset(), recordMetadata.partition());
+        }
+    };
 
 
     public void publishMessageSync(String key, String message) {
@@ -36,21 +36,21 @@ public class MessageProducer {
         try {
             recordMetadata = (RecordMetadata) kafkaProducer.send(producerRecord).get();
             logSuccessResponse(key, message, recordMetadata);
-        }
-        catch (InterruptedException | ExecutionException e) {
-            logger.error("Exception in publishMessageSync : {} ", e);
+        } catch (InterruptedException | ExecutionException e) {
+            logger.error("Exception in publishMessageSync : {} ", e.getMessage());
         }
 
     }
 
-    public void logSuccessResponse(String  message, String key, RecordMetadata recordMetadata){
-        logger.info("Message ** {} ** sent successfully with the key  **{}** and the recordMetadata is : {} ", message,key, recordMetadata);
+    public void logSuccessResponse(String message, String key, RecordMetadata recordMetadata) {
+        logger.info("Message ** {} ** sent successfully with the key  **{}** . ", message, key);
         logger.info(" Published Record Offset is {} and the partition is {}", recordMetadata.offset(), recordMetadata.partition());
     }
+
     public void publishMessageAsync(String key, String message) throws InterruptedException, ExecutionException, TimeoutException {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, key, message);
         kafkaProducer.send(producerRecord, callback);
-       // kafkaProducer.send(producerRecord).get();
+        // kafkaProducer.send(producerRecord).get();
     }
 
     public static Map<String, String> propsMap() {
@@ -69,7 +69,7 @@ public class MessageProducer {
         Map<String, String> producerProps = propsMap();
         MessageProducer messageProducer = new MessageProducer(producerProps);
         messageProducer.publishMessageSync(null, "ABC");
-        messageProducer.publishMessageAsync(null , "ABC");
+        messageProducer.publishMessageAsync(null, "ABC");
         Thread.sleep(3000);
     }
 }
