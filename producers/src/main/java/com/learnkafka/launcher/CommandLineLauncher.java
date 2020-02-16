@@ -58,10 +58,9 @@ public class CommandLineLauncher {
             logger.info("Selected Option is : {} ", option);
             switch (option) {
                 case "1":
-                case "2":
                     acceptMessageFromUser(option);
                     break;
-                case "3":
+                case "2":
                     cliUp = false;
                     break;
                 default:
