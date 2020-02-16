@@ -81,7 +81,7 @@ public class CommandLineLauncher {
     }
     public static MessageProducer init(){
 
-        Map<String, String> producerProps = propsMap();
+        Map<String, Object> producerProps = propsMap();
         MessageProducer messageProducer = new MessageProducer(producerProps);
         return messageProducer;
     }

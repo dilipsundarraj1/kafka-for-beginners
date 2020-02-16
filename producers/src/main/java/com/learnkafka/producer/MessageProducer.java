@@ -17,7 +17,7 @@ public class MessageProducer {
     String topicName = "test-topic";
     KafkaProducer kafkaProducer;
 
-    public MessageProducer(Map<String, String> producerProps) {
+    public MessageProducer(Map<String, Object> producerProps) {
         kafkaProducer = new KafkaProducer(producerProps);
     }
 
@@ -53,9 +53,9 @@ public class MessageProducer {
         // kafkaProducer.send(producerRecord).get();
     }
 
-    public static Map<String, String> propsMap() {
+    public static Map<String, Object> propsMap() {
 
-        Map<String, String> propsMap = new HashMap<>();
+        Map<String, Object> propsMap = new HashMap<>();
         propsMap.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092, localhost:9093, localhost:9094");
         propsMap.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         propsMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
@@ -66,7 +66,7 @@ public class MessageProducer {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
 
-        Map<String, String> producerProps = propsMap();
+        Map<String, Object> producerProps = propsMap();
         MessageProducer messageProducer = new MessageProducer(producerProps);
         messageProducer.publishMessageSync(null, "ABC");
         messageProducer.publishMessageAsync(null, "ABC");
