@@ -1,12 +1,12 @@
-package com.learnjava.launcher;
+package com.learnkafka.launcher;
 
-import com.learnjava.producer.MessageProducer;
+import com.learnkafka.producer.MessageProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import static com.learnjava.producer.MessageProducer.propsMap;
+import static com.learnkafka.producer.MessageProducer.propsMap;
 
 public class CommandLineLauncher {
     private static final Logger logger = LoggerFactory.getLogger(MessageProducer.class);
