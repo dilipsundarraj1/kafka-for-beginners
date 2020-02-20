@@ -102,7 +102,6 @@ public class CommandLineLauncher {
     }
 
     public static void acceptMessageFromUser(String option){
-        MessageProducer messageProducer = init();
         Scanner scanner = new Scanner(System.in);
         boolean flag= true;
         while (flag){
@@ -112,7 +111,9 @@ public class CommandLineLauncher {
             if(input.equals("00")) {
                 flag = false;
             }else {
+                MessageProducer messageProducer = init();
                 publishMessage(messageProducer, input);
+                messageProducer.close();
             }
         }
         logger.info("Exiting from Option : " + option);

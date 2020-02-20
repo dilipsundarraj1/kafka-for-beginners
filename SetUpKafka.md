@@ -192,7 +192,7 @@ auto.create.topics.enable=false
 
 ## Alter the min insync replica
 ```
-./kafka-topics.sh --alter --zookeeper localhost:2181 --topic library-events --config min.insync.replicas=2
+./kafka-topics.sh --alter --zookeeper localhost:2181 --topic test-topic --config min.insync.replicas=2
 ```
 
 ## Delete a topic

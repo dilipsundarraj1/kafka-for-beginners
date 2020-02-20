@@ -29,6 +29,10 @@ public class MessageProducer {
         }
     };
 
+    public void close(){
+        kafkaProducer.close();
+    }
+
 
     public void publishMessageSync(String key, String message) {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, key, message);
@@ -59,6 +63,8 @@ public class MessageProducer {
         propsMap.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092, localhost:9093, localhost:9094");
         propsMap.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         propsMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        /*propsMap.put(ProducerConfig.ACKS_CONFIG, "all");
+        propsMap.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, "3000");*/
 
         String serializer = "org.apache.kafka.common.serialization.StringSerializer";
         return propsMap;
