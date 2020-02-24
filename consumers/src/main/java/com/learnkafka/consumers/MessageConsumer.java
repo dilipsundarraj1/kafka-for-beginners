@@ -1,6 +1,5 @@
 package com.learnkafka.consumers;
 
-import com.sun.tools.javac.util.List;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -11,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MessageConsumer {
@@ -18,6 +18,8 @@ public class MessageConsumer {
     private static final Logger logger = LoggerFactory.getLogger(MessageConsumer.class);
 
     KafkaConsumer<String, String> kafkaConsumer;
+    String topicName = "test-topic-replicated";
+
 
     public  MessageConsumer(Map<String, Object> propsMap){
         kafkaConsumer = new KafkaConsumer<String, String>(propsMap);
@@ -30,11 +32,13 @@ public class MessageConsumer {
         propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, "messageConsumer");
+        propsMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
         return propsMap;
     }
 
    public void pollKafka(){
-       kafkaConsumer.subscribe(List.of("test-topic"));
+       kafkaConsumer.subscribe(List.of(topicName));
        Duration timeOutDuration = Duration.of(100, ChronoUnit.MILLIS);
        try{
         while(true){
@@ -46,7 +50,7 @@ public class MessageConsumer {
        }catch (Exception e){
             logger.error("Exception in pollKafka : "+ e);
        }finally {
-           kafkaConsumer.close();
+           kafkaConsumer.close(); // always close the consumer for releasing the connections and sockets
        }
     }
 

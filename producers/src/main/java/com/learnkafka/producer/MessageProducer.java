@@ -14,7 +14,8 @@ public class MessageProducer {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageProducer.class);
 
-    String topicName = "test-topic";
+    //String topicName = "test-topic";
+    String topicName = "test-topic-replicated";
     KafkaProducer kafkaProducer;
 
     public MessageProducer(Map<String, Object> producerProps) {
@@ -63,8 +64,8 @@ public class MessageProducer {
         propsMap.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092, localhost:9093, localhost:9094");
         propsMap.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         propsMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        /*propsMap.put(ProducerConfig.ACKS_CONFIG, "all");
-        propsMap.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, "3000");*/
+        propsMap.put(ProducerConfig.ACKS_CONFIG, "all");
+        /*propsMap.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, "3000");*/
 
         String serializer = "org.apache.kafka.common.serialization.StringSerializer";
         return propsMap;
