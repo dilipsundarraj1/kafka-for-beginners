@@ -34,7 +34,7 @@ auto.create.topics.enable=false
 - Topic with Replication Factor as 3.
 
 ```
-./kafka-topics.sh --create --topic test-topic -zookeeper localhost:2181 --replication-factor 3 --partitions 3
+./kafka-topics.sh --create --topic test-topic-replicated -zookeeper localhost:2181 --replication-factor 3 --partitions 3
 ```
 
 ## How to instantiate a Console Producer?
