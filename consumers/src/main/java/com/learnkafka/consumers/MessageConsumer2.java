@@ -13,15 +13,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MessageConsumer {
+public class MessageConsumer2 {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageConsumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageConsumer2.class);
 
     KafkaConsumer<String, String> kafkaConsumer;
     String topicName = "test-topic-replicated";
 
 
-    public  MessageConsumer(Map<String, Object> propsMap){
+    public MessageConsumer2(Map<String, Object> propsMap){
         kafkaConsumer = new KafkaConsumer<String, String>(propsMap);
     }
 
@@ -33,12 +33,6 @@ public class MessageConsumer {
         propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, "messageConsumer");
        // propsMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-
-        /**
-         * commit
-         */
-        propsMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        propsMap.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, "12000");
         return propsMap;
     }
 
@@ -47,7 +41,6 @@ public class MessageConsumer {
        Duration timeOutDuration = Duration.of(100, ChronoUnit.MILLIS);
        try{
         while(true){
-
             ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(timeOutDuration);
             consumerRecords.forEach((record)->{
                 logger.info("Consumed Record key is {}  and the value is {} and the partition is {} ", record.key(), record.value(), record.partition());
@@ -63,7 +56,7 @@ public class MessageConsumer {
     public static void main(String[] args) {
 
         Map<String, Object> propsMap = buildConsumerProperties();
-        MessageConsumer messageConsumer = new MessageConsumer(propsMap);
+        MessageConsumer2 messageConsumer = new MessageConsumer2(propsMap);
         messageConsumer.pollKafka();
     }
 }
