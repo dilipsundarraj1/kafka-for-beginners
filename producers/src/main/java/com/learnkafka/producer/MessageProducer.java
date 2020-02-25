@@ -65,7 +65,8 @@ public class MessageProducer {
         propsMap.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         propsMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         propsMap.put(ProducerConfig.ACKS_CONFIG, "all");
-        /*propsMap.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, "3000");*/
+        propsMap.put(ProducerConfig.RETRIES_CONFIG, "10");
+        propsMap.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, "3000");
 
         String serializer = "org.apache.kafka.common.serialization.StringSerializer";
         return propsMap;
