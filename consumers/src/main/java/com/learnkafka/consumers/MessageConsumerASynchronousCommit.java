@@ -46,14 +46,18 @@ public class MessageConsumerASynchronousCommit {
                     logger.info("Consumer Record Key is {} and the value is {} and the partion {}",
                             record.key(), record.value(), record.partition());
                 });
-                //kafkaConsumer.commitAsync();
-                kafkaConsumer.commitAsync((offsets, exception) -> {
-                    if(exception!=null){
-                        logger.error("Exception Committing the offsets : {} " , exception.getMessage());
-                    }else{
-                        logger.info("Offsets are committed successfully");
-                    }
-                }); // commits the last record offset read by the poll method
+                if (consumerRecords.count() > 0) {
+                    //kafkaConsumer.commitAsync();
+                    kafkaConsumer.commitAsync((offsets, exception) -> {
+                        //logger.info("offsets : {} " , offsets);
+                        if (exception != null) {
+                            logger.error("Exception Committing the offsets : {} ", exception.getMessage());
+                        } else {
+                            logger.info("Offsets are committed successfully");
+                        }
+                    }); // commits the last record offset read by the poll method
+                }
+
             }
         } catch (CommitFailedException e) {
             logger.error("CommitFailedException in pollKafka : " + e);

@@ -46,7 +46,9 @@ public class MessageConsumerSynchronousCommit {
                     logger.info("Consumer Record Key is {} and the value is {} and the partion {}",
                             record.key(), record.value(), record.partition());
                 });
-                kafkaConsumer.commitSync(); // commits the last record offset read by the poll method
+                if(consumerRecords.count()>0){
+                    kafkaConsumer.commitSync(); // commits the last record offset read by the poll invocation
+                }
             }
         } catch (CommitFailedException e) {
             logger.error("CommitFailedException in pollKafka : " + e);
