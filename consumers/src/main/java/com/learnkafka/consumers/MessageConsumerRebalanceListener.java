@@ -1,5 +1,6 @@
 package com.learnkafka.consumers;
 
+import com.learnkafka.listeners.MessageRebalanceListener;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -44,7 +45,7 @@ public class MessageConsumerRebalanceListener {
     }
 
    public void pollKafka(){
-       kafkaConsumer.subscribe(List.of(topicName));
+       kafkaConsumer.subscribe(List.of(topicName), new MessageRebalanceListener(kafkaConsumer));
        Duration timeOutDuration = Duration.of(100, ChronoUnit.MILLIS);
        try{
         while(true){
