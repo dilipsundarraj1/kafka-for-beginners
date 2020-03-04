@@ -6,20 +6,23 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MessageConsumerCommitSpecificOffset {
+public class MessageConsumerSeek {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageConsumerCommitSpecificOffset.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageConsumerSeek.class);
     private Map<TopicPartition, OffsetAndMetadata> offsetsMap = new HashMap<>();
     KafkaConsumer<String, String> kafkaConsumer;
     String topicName = "test-topic-replicated";
 
-    public MessageConsumerCommitSpecificOffset(Map<String, Object> propsMap) {
+    public MessageConsumerSeek(Map<String, Object> propsMap) {
         kafkaConsumer = new KafkaConsumer<String, String>(propsMap);
     }
 
@@ -48,8 +51,9 @@ public class MessageConsumerCommitSpecificOffset {
                                     //The committed offset should always be the offset of the next message
                 });
                 if(consumerRecords.count()>0){
-                    kafkaConsumer.commitSync(offsetsMap); // commits the last record offset read by the poll invocation
-                    logger.info("Offsets Committed!");
+                    logger.info("offsetsMap : {} ", offsetsMap);
+                    //kafkaConsumer.commitSync(offsetsMap); // commits the last record offset read by the poll invocation
+                    writeOffsetsMapToPath(offsetsMap);
                 }
             }
         } catch (CommitFailedException e) {
@@ -62,8 +66,25 @@ public class MessageConsumerCommitSpecificOffset {
 
     }
 
+    private void writeOffsetsMapToPath(Map<TopicPartition, OffsetAndMetadata> offsetsMap) throws IOException {
+
+        FileOutputStream fout = null;
+        ObjectOutputStream oos = null;
+        try {
+            fout = new FileOutputStream("offset.ser");
+            oos = new ObjectOutputStream(fout);
+            oos.writeObject(offsetsMap);
+            logger.info("Offsets Written Successfully!");
+        } catch (Exception ex) {
+
+        } finally {
+            fout.close();
+            oos.close();
+        }
+    }
+
     public static void main(String[] args) {
-        MessageConsumerCommitSpecificOffset messageConsumer = new MessageConsumerCommitSpecificOffset(buildConsumerProperties());
+        MessageConsumerSeek messageConsumer = new MessageConsumerSeek(buildConsumerProperties());
         messageConsumer.pollKafka();
     }
 }

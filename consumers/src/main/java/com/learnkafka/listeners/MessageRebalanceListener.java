@@ -29,5 +29,10 @@ public class MessageRebalanceListener implements ConsumerRebalanceListener {
         logger.info("Inside onPartitionsAssigned : {} ", partitions);
         kafkaConsumer.seekToBeginning(partitions);
         //kafkaConsumer.seekToEnd(partitions);
+        partitions.forEach(partition -> {
+          //  kafkaConsumer.seek(partition, );
+        });
+
+
     }
 }
