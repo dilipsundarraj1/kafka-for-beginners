@@ -1,14 +1,13 @@
 package com.learnkafka.consumers;
 
+import com.learnkafka.listeners.MessageRebalanceListener;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ public class MessageConsumerSeek {
     private Map<TopicPartition, OffsetAndMetadata> offsetsMap = new HashMap<>();
     KafkaConsumer<String, String> kafkaConsumer;
     String topicName = "test-topic-replicated";
+    public static final String serialiaziedFilePath = "consumers/src/main/resources/offset.ser";
 
     public MessageConsumerSeek(Map<String, Object> propsMap) {
         kafkaConsumer = new KafkaConsumer<String, String>(propsMap);
@@ -34,12 +34,14 @@ public class MessageConsumerSeek {
         propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, "messageconsumer");
-        propsMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+            propsMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         return propsMap;
     }
 
-    public void pollKafka() {
-        kafkaConsumer.subscribe(List.of(topicName));
+    public void pollKafka() throws IOException, ClassNotFoundException {
+        
+        readSerializatinFile();
+        kafkaConsumer.subscribe(List.of(topicName), new MessageRebalanceListener(kafkaConsumer));
         Duration timeOutDuration = Duration.of(100, ChronoUnit.MILLIS);
         try {
             while (true) {
@@ -66,24 +68,38 @@ public class MessageConsumerSeek {
 
     }
 
+    private void readSerializatinFile() throws IOException, ClassNotFoundException {
+         Map<TopicPartition, OffsetAndMetadata> offsetsMapFromPath = new HashMap<>();
+        FileInputStream fileInputStream = new FileInputStream(serialiaziedFilePath);
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+        ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream);
+        offsetsMapFromPath = (Map<TopicPartition, OffsetAndMetadata>) objectInputStream.readObject();
+        logger.info("Offset Map read from the path is : {} ", offsetsMapFromPath);
+        objectInputStream.close();
+
+    }
+
     private void writeOffsetsMapToPath(Map<TopicPartition, OffsetAndMetadata> offsetsMap) throws IOException {
 
         FileOutputStream fout = null;
         ObjectOutputStream oos = null;
         try {
-            fout = new FileOutputStream("offset.ser");
+            //Users/z001qgd/Dilip/Udemy/kafka-for-beginners/consumers/src/main/resources
+            fout = new FileOutputStream(serialiaziedFilePath);
             oos = new ObjectOutputStream(fout);
             oos.writeObject(offsetsMap);
             logger.info("Offsets Written Successfully!");
         } catch (Exception ex) {
-
+            logger.error("Exception Occurred while writing the file : " + ex);
         } finally {
-            fout.close();
-            oos.close();
+            if(fout!=null)
+                fout.close();
+            if(oos!=null)
+                oos.close();
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         MessageConsumerSeek messageConsumer = new MessageConsumerSeek(buildConsumerProperties());
         messageConsumer.pollKafka();
     }
