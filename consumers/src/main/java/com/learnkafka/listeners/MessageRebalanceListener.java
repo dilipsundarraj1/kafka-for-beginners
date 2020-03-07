@@ -37,11 +37,14 @@ public class MessageRebalanceListener implements ConsumerRebalanceListener {
     public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
         Map<TopicPartition, OffsetAndMetadata> offsetMap = readOffsetSerializationFile();
         logger.info("Inside onPartitionsAssigned : {} ", partitions);
+
+        if(offsetMap.size()>0){
+            partitions.forEach(partition -> {
+                kafkaConsumer.seek(partition,offsetMap.get(partition));
+            });
+        }
         //kafkaConsumer.seekToBeginning(partitions);
         //kafkaConsumer.seekToEnd(partitions);
-        partitions.forEach(partition -> {
-            kafkaConsumer.seek(partition,offsetMap.get(partition).offset());
-        });
     }
 
     private static Map<TopicPartition, OffsetAndMetadata> readOffsetSerializationFile()  {

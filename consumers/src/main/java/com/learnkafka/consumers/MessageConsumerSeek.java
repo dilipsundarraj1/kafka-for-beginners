@@ -40,7 +40,6 @@ public class MessageConsumerSeek {
 
     public void pollKafka() throws IOException, ClassNotFoundException {
         
-        readSerializatinFile();
         kafkaConsumer.subscribe(List.of(topicName), new MessageRebalanceListener(kafkaConsumer));
         Duration timeOutDuration = Duration.of(100, ChronoUnit.MILLIS);
         try {
@@ -67,24 +66,11 @@ public class MessageConsumerSeek {
         }
 
     }
-
-    private void readSerializatinFile() throws IOException, ClassNotFoundException {
-         Map<TopicPartition, OffsetAndMetadata> offsetsMapFromPath = new HashMap<>();
-        FileInputStream fileInputStream = new FileInputStream(serialiaziedFilePath);
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
-        ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream);
-        offsetsMapFromPath = (Map<TopicPartition, OffsetAndMetadata>) objectInputStream.readObject();
-        logger.info("Offset Map read from the path is : {} ", offsetsMapFromPath);
-        objectInputStream.close();
-
-    }
-
     private void writeOffsetsMapToPath(Map<TopicPartition, OffsetAndMetadata> offsetsMap) throws IOException {
 
         FileOutputStream fout = null;
         ObjectOutputStream oos = null;
         try {
-            //Users/z001qgd/Dilip/Udemy/kafka-for-beginners/consumers/src/main/resources
             fout = new FileOutputStream(serialiaziedFilePath);
             oos = new ObjectOutputStream(fout);
             oos.writeObject(offsetsMap);
