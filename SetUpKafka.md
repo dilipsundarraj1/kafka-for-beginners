@@ -37,6 +37,13 @@ auto.create.topics.enable=false
 ./kafka-topics.sh --create --topic test-topic-replicated -zookeeper localhost:2181 --replication-factor 3 --partitions 3
 ```
 
+- Create Items Topic
+
+```
+./kafka-topics.sh --create --topic items -zookeeper localhost:2181 --replication-factor 3 --partitions 3
+```
+
+
 ## How to instantiate a Console Producer?
 
 ### Without Key
@@ -103,6 +110,12 @@ kafka-topics.bat --create --topic test-topic -zookeeper localhost:2181 --replica
 
 ```
 kafka-topics.bat --create --topic test-topic-replicated -zookeeper localhost:2181 --replication-factor 3 --partitions 3
+```
+
+- Create Items Topic
+
+```
+kafka-topics.bat --create --topic items -zookeeper localhost:2181 --replication-factor 3 --partitions 3
 ```
 
 
