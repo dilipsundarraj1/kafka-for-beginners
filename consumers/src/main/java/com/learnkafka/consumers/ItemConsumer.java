@@ -1,13 +1,12 @@
 package com.learnkafka.consumers;
 
-import com.learnkafka.deserializer.CountryDeserializer;
 import com.learnkafka.deserializer.ItemDeserializer;
+import com.learnkafka.deserializer.ItemDeserializer1;
 import com.learnkafka.domain.Item;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

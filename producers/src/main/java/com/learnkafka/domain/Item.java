@@ -9,6 +9,10 @@ public class Item implements Serializable{
     private String itemName;
     private Double price;
 
+    public Item(){
+
+    }
+
     public Item(Integer id, String itemName, Double price) {
         this.id = id;
         this.itemName = itemName;

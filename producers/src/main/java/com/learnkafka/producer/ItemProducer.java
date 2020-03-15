@@ -2,6 +2,7 @@ package com.learnkafka.producer;
 
 import com.learnkafka.domain.Item;
 import com.learnkafka.serializer.ItemSerializer;
+import com.learnkafka.serializer.ItemSerializer1;
 import com.sun.tools.javac.util.List;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -30,6 +31,7 @@ public class ItemProducer {
         Map<String, Object> propsMap = new HashMap<>();
         propsMap.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092, localhost:9093, localhost:9094");
         propsMap.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class.getName());
+        //propsMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ItemSerializer.class.getName());
         propsMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ItemSerializer.class.getName());
         propsMap.put(ProducerConfig.ACKS_CONFIG, "all");
         propsMap.put(ProducerConfig.RETRIES_CONFIG, "10");
