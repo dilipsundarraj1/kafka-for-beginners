@@ -1,8 +1,13 @@
 package com.learnkafka.consumers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.learnkafka.deserializer.ItemDeserializer;
+import com.learnkafka.domain.Item;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,27 +18,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.List.*;
+public class ItemConsumer_Approach2 {
 
-public class MessageConsumer {
+    private static final Logger logger = LoggerFactory.getLogger(ItemConsumer_Approach2.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageConsumer.class);
+    KafkaConsumer<Integer, String> kafkaConsumer;
+    ObjectMapper objectMapper = new ObjectMapper();
+    String topicName = "items";
 
-    KafkaConsumer<String, String> kafkaConsumer;
-    String topicName = "test-topic-replicated";
 
-
-    public  MessageConsumer(Map<String, Object> propsMap){
-        kafkaConsumer = new KafkaConsumer<String, String>(propsMap);
+    public ItemConsumer_Approach2(Map<String, Object> propsMap){
+        kafkaConsumer = new KafkaConsumer<Integer, String>(propsMap);
     }
 
     public static Map<String, Object> buildConsumerProperties() {
 
         Map<String, Object> propsMap = new HashMap<>();
         propsMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092, localhost:9093, localhost:9094");
-        propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class.getName());
         propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, "messageConsumer");
+        propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, "itemConsumer");
 
         //max.poll.interval.ms
        // propsMap.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, "5000");
@@ -46,15 +50,23 @@ public class MessageConsumer {
     }
 
    public void pollKafka(){
-       kafkaConsumer.subscribe(of(topicName));
+       kafkaConsumer.subscribe(List.of(topicName));
        Duration timeOutDuration = Duration.of(100, ChronoUnit.MILLIS);
        try{
         while(true){
 
-            ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(timeOutDuration);
+            ConsumerRecords<Integer, String> consumerRecords = kafkaConsumer.poll(timeOutDuration);
             //Thread.sleep(6000);
             consumerRecords.forEach((record)->{
                 logger.info("Consumed Record key is {}  and the value is {} and the partition is {} ", record.key(), record.value(), record.partition());
+                try {
+                    Item item = (Item) objectMapper.readValue(record.value(), Item.class);
+                    logger.info("Deserialized Item is {} ", item);
+
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+
             });
         }
        }catch (Exception e){
@@ -67,7 +79,7 @@ public class MessageConsumer {
     public static void main(String[] args) {
 
         Map<String, Object> propsMap = buildConsumerProperties();
-        MessageConsumer messageConsumer = new MessageConsumer(propsMap);
-        messageConsumer.pollKafka();
+        ItemConsumer_Approach2 itemConsumer = new ItemConsumer_Approach2(propsMap);
+        itemConsumer.pollKafka();
     }
 }
