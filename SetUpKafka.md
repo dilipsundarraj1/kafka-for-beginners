@@ -309,3 +309,10 @@ kafka-run-class.bat kafka.tools.DumpLogSegments --deep-iteration --files /tmp/ka
 ```
 </p>
 </details>
+
+# Quick setup - Docker
+
+If you have docker installed you may use the ready-to-go docker-compose file at the /docker folder to set up 3 brokers 
+```
+docker-compose up -d
+```
