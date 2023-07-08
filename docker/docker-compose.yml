@@ -1,0 +1,78 @@
+version: '3'
+services:
+  broker1:
+    image: bitnami/kafka:latest
+    container_name: broker1
+    networks:
+      - kafka_net
+    ports:
+      - 9192:9192
+      - 9193:9193
+      - 9194:9194
+    volumes:
+      - kafka_1:/bitnami/kafka
+    environment:
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_KRAFT_MODE=true
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=false
+      - KAFKA_CFG_LISTENERS=CONTROLLER://0.0.0.0:9193,PLAINTEXT://0.0.0.0:9192,EXTERNAL://0.0.0.0:9194
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@broker1:9193,2@broker2:9293,3@broker3:9393
+      - KAFKA_KRAFT_CLUSTER_ID=OTMwNzFhYTY1ODNiNGE5OT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://broker1:9192,EXTERNAL://localhost:9194
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+
+  broker2:
+    image: bitnami/kafka:latest
+    container_name: broker2
+    networks:
+      - kafka_net
+    ports:
+      - 9292:9292
+      - 9293:9293
+      - 9294:9294
+    volumes:
+      - kafka_2:/bitnami/kafka
+    environment:
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_KRAFT_MODE=true
+      - KAFKA_CFG_NODE_ID=2
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=false
+      - KAFKA_CFG_LISTENERS=CONTROLLER://0.0.0.0:9293,PLAINTEXT://0.0.0.0:9292,EXTERNAL://0.0.0.0:9294
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@broker1:9193,2@broker2:9293,3@broker3:9393
+      - KAFKA_KRAFT_CLUSTER_ID=OTMwNzFhYTY1ODNiNGE5OT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://broker2:9292,EXTERNAL://localhost:9294
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+
+  broker3:
+    image: bitnami/kafka:latest
+    container_name: broker3
+    networks:
+      - kafka_net
+    ports:
+      - 9392:9392
+      - 9393:9393
+      - 9394:9394
+    volumes:
+      - kafka_3:/bitnami/kafka
+    environment:
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_KRAFT_MODE=true
+      - KAFKA_CFG_NODE_ID=3
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=false
+      - KAFKA_CFG_LISTENERS=CONTROLLER://0.0.0.0:9393,PLAINTEXT://0.0.0.0:9392,EXTERNAL://0.0.0.0:9394
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@broker1:9193,2@broker2:9293,3@broker3:9393
+      - KAFKA_KRAFT_CLUSTER_ID=OTMwNzFhYTY1ODNiNGE5OT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://broker3:9392,EXTERNAL://localhost:9394
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+
+networks:
+  kafka_net:
+
+volumes:
+  kafka_1:
+  kafka_2:
+  kafka_3:
